@@ -1,6 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="dein.koldo.tablesmariadb.controller.TablasController">
+<VBox
+        alignment="CENTER"
+        spacing="10.0"
+        prefWidth="600.0"
+        prefHeight="500.0"
+        xmlns="http://javafx.com/javafx/26"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="dein.koldo.tablesmariadb.controller.TablasController">
+
+    <padding>
+        <Insets
+                top="20.0"
+                right="20.0"
+                bottom="20.0"
+                left="20.0"
+        />
+    </padding>
+
+    <HBox
+            alignment="CENTER_LEFT"
+            spacing="10.0">
+
+        <Label
+                text="First Name:"
+                prefWidth="100.0"
+        />
+
+        <TextField
+                fx:id="firstName"
+                promptText="First name"
+                HBox.hgrow="ALWAYS"
+        />
+
+    </HBox>
+
+    <HBox
+            alignment="CENTER_LEFT"
+            spacing="10.0">
+
+        <Label
+                text="Last Name:"
+                prefWidth="100.0"
+        />
+
+        <TextField
+                fx:id="lastName"
+                promptText="Last name"
+                HBox.hgrow="ALWAYS"
+        />
+
+    </HBox>
+
+    <HBox
+            alignment="CENTER_LEFT"
+            spacing="10.0">
+
+        <Label
+                text="Birth Date:"
+                prefWidth="100.0"
+        />
+
+        <DatePicker
+                fx:id="birthDate"
+        />
+
+    </HBox>
+
+    <HBox
+            alignment="CENTER"
+            spacing="10.0">
+
+        <Button
+                fx:id="add"
+                text="_Add"
+                mnemonicParsing="true"
+                onAction="#addRow"
+        />
+
+        <Button
+                fx:id="delete"
+                text="_Delete Selected Rows"
+                mnemonicParsing="true"
+                onAction="#deleteRows"
+        />
+
+        <Button
+                fx:id="restore"
+                text="_Restore Rows"
+                mnemonicParsing="true"
+                onAction="#restoreRows"
+        />
+
+    </HBox>
+
+    <TableView
+            fx:id="table"
+            VBox.vgrow="ALWAYS">
+
+        <columns>
+
+            <TableColumn
+                    fx:id="tableUserId"
+                    text="ID"
+                    prefWidth="75.0"
+            />
+
+            <TableColumn
+                    fx:id="tableFirstName"
+                    text="First Name"
+                    prefWidth="150.0"
+            />
+
+            <TableColumn
+                    fx:id="tableLastName"
+                    text="Last Name"
+                    prefWidth="150.0"
+            />
+
+            <TableColumn
+                    fx:id="tableBirthDate"
+                    text="Birth Date"
+                    prefWidth="150.0"
+            />
+
+        </columns>
+
+    </TableView>
+
 </VBox>
