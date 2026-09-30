@@ -1,0 +1,15 @@
+USE tables_mariadb;
+
+CREATE TABLE IF NOT EXISTS persona (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    first_name VARCHAR(100) NOT NULL,
+
+    last_name VARCHAR(100) NOT NULL,
+
+    birth_date DATE NOT NULL,
+
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
