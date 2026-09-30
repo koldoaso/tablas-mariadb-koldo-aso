@@ -15,7 +15,7 @@
         spacing="10.0"
         prefWidth="600.0"
         prefHeight="500.0"
-        xmlns="http://javafx.com/javafx/26"
+        xmlns="http://javafx.com/javafx/21"
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="dein.koldo.tablesmariadb.controller.TablasController">
 
@@ -33,13 +33,13 @@
             spacing="10.0">
 
         <Label
-                text="First Name:"
-                prefWidth="100.0"
+                text="%label.firstName"
+                prefWidth="130.0"
         />
 
         <TextField
                 fx:id="firstName"
-                promptText="First name"
+                promptText="%prompt.firstName"
                 HBox.hgrow="ALWAYS"
         />
 
@@ -50,13 +50,13 @@
             spacing="10.0">
 
         <Label
-                text="Last Name:"
-                prefWidth="100.0"
+                text="%label.lastName"
+                prefWidth="130.0"
         />
 
         <TextField
                 fx:id="lastName"
-                promptText="Last name"
+                promptText="%prompt.lastName"
                 HBox.hgrow="ALWAYS"
         />
 
@@ -67,13 +67,11 @@
             spacing="10.0">
 
         <Label
-                text="Birth Date:"
-                prefWidth="100.0"
+                text="%label.birthDate"
+                prefWidth="130.0"
         />
 
-        <DatePicker
-                fx:id="birthDate"
-        />
+        <DatePicker fx:id="birthDate"/>
 
     </HBox>
 
@@ -83,21 +81,21 @@
 
         <Button
                 fx:id="add"
-                text="_Add"
+                text="%button.add"
                 mnemonicParsing="true"
                 onAction="#addRow"
         />
 
         <Button
                 fx:id="delete"
-                text="_Delete Selected Rows"
+                text="%button.delete"
                 mnemonicParsing="true"
                 onAction="#deleteRows"
         />
 
         <Button
                 fx:id="restore"
-                text="_Restore Rows"
+                text="%button.restore"
                 mnemonicParsing="true"
                 onAction="#restoreRows"
         />
@@ -112,26 +110,26 @@
 
             <TableColumn
                     fx:id="tableUserId"
-                    text="ID"
+                    text="%column.id"
                     prefWidth="75.0"
             />
 
             <TableColumn
                     fx:id="tableFirstName"
-                    text="First Name"
+                    text="%column.firstName"
                     prefWidth="150.0"
             />
 
             <TableColumn
                     fx:id="tableLastName"
-                    text="Last Name"
+                    text="%column.lastName"
                     prefWidth="150.0"
             />
 
             <TableColumn
                     fx:id="tableBirthDate"
-                    text="Birth Date"
-                    prefWidth="150.0"
+                    text="%column.birthDate"
+                    prefWidth="170.0"
             />
 
         </columns>

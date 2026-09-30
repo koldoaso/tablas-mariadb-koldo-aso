@@ -3,10 +3,18 @@ package dein.koldo.tablesmariadb.controller;
 import dein.koldo.tablesmariadb.dao.PersonaDao;
 import dein.koldo.tablesmariadb.model.PersonaModel;
 
+import java.net.URL;
+
 import java.sql.SQLException;
+
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,11 +26,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -37,9 +47,13 @@ import javafx.scene.control.Tooltip;
  * <p>Database access is delegated to {@link PersonaDao}, keeping the
  * controller separate from the persistence layer.</p>
  *
+ * <p>User-visible texts are obtained from a {@link ResourceBundle},
+ * allowing the application to automatically adapt to the locale
+ * configured in the operating system.</p>
+ *
  * @author Koldo
  */
-public class TablasController {
+public class TablasController implements Initializable {
 
     /**
      * Logger used to record controller activity and errors.
@@ -61,6 +75,11 @@ public class TablasController {
      */
     private final ObservableList<PersonaModel> personas =
             FXCollections.observableArrayList();
+
+    /**
+     * Translation resources currently loaded by JavaFX.
+     */
+    private ResourceBundle resources;
 
     /**
      * Button used to add a new person.
@@ -129,14 +148,22 @@ public class TablasController {
     private TableColumn<PersonaModel, LocalDate> tableBirthDate;
 
     /**
-     * Initializes the controller after the FXML elements have been
-     * injected by JavaFX.
+     * Initializes the controller after all FXML components have
+     * been injected.
      *
-     * <p>This method configures the table, tooltips, selection mode
-     * and loads the people stored in MariaDB.</p>
+     * <p>The {@link ResourceBundle} provided by the FXMLLoader contains
+     * the translations corresponding to the current system locale.</p>
+     *
+     * @param location location of the FXML document
+     * @param resources translation resources loaded for the current locale
      */
-    @FXML
-    public void initialize() {
+    @Override
+    public void initialize(
+            URL location,
+            ResourceBundle resources
+    ) {
+
+        this.resources = resources;
 
         configureTooltips();
 
@@ -147,34 +174,40 @@ public class TablasController {
         LOGGER.info(
                 "TablasController inicializado."
         );
+
+        LOGGER.info(
+                "Locale detectada: "
+                        + Locale.getDefault()
+        );
     }
 
     /**
-     * Configures the tooltips displayed by the application buttons.
+     * Configures translated tooltips for the application buttons.
      */
     private void configureTooltips() {
 
         add.setTooltip(
                 new Tooltip(
-                        "Adds a new person."
+                        text("tooltip.add")
                 )
         );
 
         delete.setTooltip(
                 new Tooltip(
-                        "Deletes the selected rows."
+                        text("tooltip.delete")
                 )
         );
 
         restore.setTooltip(
                 new Tooltip(
-                        "Restores previously deleted rows."
+                        text("tooltip.restore")
                 )
         );
     }
 
     /**
-     * Configures the table columns and selection mode.
+     * Configures the table columns, localized date formatting
+     * and selection mode.
      */
     private void configureTable() {
 
@@ -202,13 +235,72 @@ public class TablasController {
                 )
         );
 
-        table.setItems(personas);
+        configureBirthDateFormat();
+
+        table.setItems(
+                personas
+        );
 
         table
                 .getSelectionModel()
                 .setSelectionMode(
                         SelectionMode.MULTIPLE
                 );
+    }
+
+    /**
+     * Configures the birth date column to display dates according
+     * to the current system locale.
+     *
+     * <p>For example, Spanish and English locales may display the
+     * same date using different textual formats.</p>
+     */
+    private void configureBirthDateFormat() {
+
+        DateTimeFormatter dateFormatter =
+                DateTimeFormatter
+                        .ofLocalizedDate(
+                                FormatStyle.MEDIUM
+                        )
+                        .withLocale(
+                                Locale.getDefault()
+                        );
+
+        tableBirthDate.setCellFactory(column ->
+                new TableCell<>() {
+
+                    /**
+                     * Updates the text displayed by a birth date cell.
+                     *
+                     * @param date date associated with the current row
+                     * @param empty indicates whether the cell is empty
+                     */
+                    @Override
+                    protected void updateItem(
+                            LocalDate date,
+                            boolean empty
+                    ) {
+
+                        super.updateItem(
+                                date,
+                                empty
+                        );
+
+                        if (empty || date == null) {
+
+                            setText(null);
+
+                        } else {
+
+                            setText(
+                                    dateFormatter.format(
+                                            date
+                                    )
+                            );
+                        }
+                    }
+                }
+        );
     }
 
     /**
@@ -244,7 +336,7 @@ public class TablasController {
      * Creates a new person using the values entered in the form.
      *
      * <p>If any field is empty the operation is rejected and a
-     * warning is displayed.</p>
+     * localized warning is displayed.</p>
      */
     @FXML
     private void addRow() {
@@ -265,7 +357,9 @@ public class TablasController {
         ) {
 
             showWarning(
-                    "Todos los campos deben estar rellenados."
+                    text(
+                            "warning.requiredFields"
+                    )
             );
 
             LOGGER.warning(
@@ -284,7 +378,9 @@ public class TablasController {
                             date
                     );
 
-            personas.add(persona);
+            personas.add(
+                    persona
+            );
 
             LOGGER.info(
                     "Persona creada. ID: "
@@ -395,11 +491,13 @@ public class TablasController {
     }
 
     /**
-     * Displays a warning dialog containing the specified message.
+     * Displays a localized warning dialog.
      *
      * @param message warning message shown to the user
      */
-    private void showWarning(String message) {
+    private void showWarning(
+            String message
+    ) {
 
         Alert alert =
                 new Alert(
@@ -407,10 +505,14 @@ public class TablasController {
                 );
 
         alert.setTitle(
-                "Datos incorrectos"
+                text(
+                        "warning.invalidData.title"
+                )
         );
 
-        alert.setHeaderText(null);
+        alert.setHeaderText(
+                null
+        );
 
         alert.setContentText(
                 message
@@ -420,8 +522,8 @@ public class TablasController {
     }
 
     /**
-     * Displays a generic database error without exposing internal
-     * database information to the user.
+     * Displays a localized generic database error without exposing
+     * internal database information to the user.
      */
     private void showDatabaseError() {
 
@@ -431,17 +533,39 @@ public class TablasController {
                 );
 
         alert.setTitle(
-                "Error de base de datos"
+                text(
+                        "error.database.title"
+                )
         );
 
         alert.setHeaderText(
-                "No se ha podido acceder a MariaDB."
+                text(
+                        "error.database.header"
+                )
         );
 
         alert.setContentText(
-                "Comprueba la conexión con la base de datos."
+                text(
+                        "error.database.content"
+                )
         );
 
         alert.showAndWait();
+    }
+
+    /**
+     * Retrieves the translated text associated with the specified
+     * resource bundle key.
+     *
+     * @param key translation key
+     * @return translated text for the currently selected locale
+     */
+    private String text(
+            String key
+    ) {
+
+        return resources.getString(
+                key
+        );
     }
 }
